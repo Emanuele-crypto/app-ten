@@ -191,8 +191,9 @@
     </div>
 
     <script>
-        function arrotondaAlCentinaio(numero) {
-            return Math.ceil(numero / 100) * 100;
+        // Funzione per arrotondare alla cinquantina in eccesso
+        function arrotondaCinquantina(numero) {
+            return Math.ceil(numero / 50) * 50;
         }
 
         function calcolaProporzioni() {
@@ -258,10 +259,10 @@
             const polpaEliminata = (volumeDepolpare * (concIniziale - concDepolpata)) / 100;
             const volumeFinale = volume - polpaEliminata;
 
-            // Arrotonda tutte le quantità al centinaio in eccesso
-            const volumeNonDepolpareArrotondato = arrotondaAlCentinaio(volumeNonDepolpare);
-            const volumeDepolpareArrotondato = arrotondaAlCentinaio(volumeDepolpare);
-            const volumeFinaleArrotondato = arrotondaAlCentinaio(volumeFinale);
+            // Arrotondamento alla cinquantina in eccesso
+            const volumeNonDepolpareArrotondato = arrotondaCinquantina(volumeNonDepolpare);
+            const volumeDepolpareArrotondato = arrotondaCinquantina(volumeDepolpare);
+            const volumeFinaleArrotondato = arrotondaCinquantina(volumeFinale);
 
             // Mostra risultati
             mostraRisultati({
