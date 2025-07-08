@@ -1,280 +1,313 @@
-import React, { useState, useEffect } from 'react';
-import { Calculator, Beaker, AlertCircle, CheckCircle } from 'lucide-react';
-
-const SuccoDepolpaturaCalculator = () => {
-  const [volumeTotale, setVolumeTotale] = useState('');
-  const [concentrazioneIniziale, setConcentrazioneIniziale] = useState('');
-  const [concentrazioneDepolpata, setConcentrazioneDepolpata] = useState('0');
-  const [concentrazioneTarget, setConcentrazioneTarget] = useState('2');
-  const [risultati, setRisultati] = useState(null);
-  const [errore, setErrore] = useState('');
-
-  const calcolaProporzioni = () => {
-    const volume = parseFloat(volumeTotale);
-    const concIniziale = parseFloat(concentrazioneIniziale);
-    const concDepolpata = parseFloat(concentrazioneDepolpata);
-    const concTarget = parseFloat(concentrazioneTarget);
-
-    // Validazione input
-    if (!volume || volume <= 0) {
-      setErrore('Inserire un volume valido maggiore di 0');
-      setRisultati(null);
-      return;
-    }
-
-    if (isNaN(concIniziale) || concIniziale <= 0) {
-      setErrore('Inserire una concentrazione iniziale valida maggiore di 0%');
-      setRisultati(null);
-      return;
-    }
-
-    if (isNaN(concDepolpata) || concDepolpata < 0) {
-      setErrore('Inserire una concentrazione depolpata valida maggiore o uguale a 0%');
-      setRisultati(null);
-      return;
-    }
-
-    if (isNaN(concTarget) || concTarget <= 0) {
-      setErrore('Inserire una concentrazione target valida maggiore di 0%');
-      setRisultati(null);
-      return;
-    }
-
-    if (concIniziale > 100 || concDepolpata > 100 || concTarget > 100) {
-      setErrore('Le concentrazioni non possono essere maggiori del 100%');
-      setRisultati(null);
-      return;
-    }
-
-    if (concDepolpata >= concIniziale) {
-      setErrore('La concentrazione depolpata deve essere minore di quella iniziale');
-      setRisultati(null);
-      return;
-    }
-
-    if (concTarget <= concDepolpata || concTarget >= concIniziale) {
-      setErrore('La concentrazione target deve essere compresa tra quella depolpata e quella iniziale');
-      setRisultati(null);
-      return;
-    }
-
-    // Calcoli con formula generalizzata: x × P1 + (1-x) × P2 = Target
-    // x = (Target - P2) / (P1 - P2)
-    const fractioneNonDepolpare = (concTarget - concDepolpata) / (concIniziale - concDepolpata);
-    const fractioneDepolpare = 1 - fractioneNonDepolpare;
-    
-    const volumeNonDepolpare = fractioneNonDepolpare * volume;
-    const volumeDepolpare = fractioneDepolpare * volume;
-    const percentualeNonDepolpare = fractioneNonDepolpare * 100;
-    const percentualeDepolpare = fractioneDepolpare * 100;
-
-    setRisultati({
-      volumeNonDepolpare: volumeNonDepolpare.toFixed(2),
-      volumeDepolpare: volumeDepolpare.toFixed(2),
-      percentualeNonDepolpare: percentualeNonDepolpare.toFixed(1),
-      percentualeDepolpare: percentualeDepolpare.toFixed(1),
-      concentrazioneIniziale: concIniziale,
-      concentrazioneDepolpata: concDepolpata,
-      concentrazioneTarget: concTarget,
-      volumeTotale: volume
-    });
-    setErrore('');
-  };
-
-  // Calcolo automatico quando cambiano gli input
-  useEffect(() => {
-    if (volumeTotale && concentrazioneIniziale && concentrazioneDepolpata !== '' && concentrazioneTarget !== '') {
-      calcolaProporzioni();
-    } else {
-      setRisultati(null);
-      setErrore('');
-    }
-  }, [volumeTotale, concentrazioneIniziale, concentrazioneDepolpata, concentrazioneTarget]);
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-6 text-white">
-            <div className="flex items-center gap-3">
-              <Beaker size={32} />
-              <div>
-                <h1 className="text-2xl font-bold">Calcolatore Depolpatura Succo</h1>
-                <p className="text-orange-100 mt-1">Calcola le proporzioni per ottenere qualsiasi concentrazione target</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6">
-            {/* Form Input */}
-            <div className="max-w-2xl mx-auto mb-8">
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                  <Calculator size={20} />
-                  Dati Iniziali
-                </h2>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Volume Totale di Succo (litri)
-                  </label>
-                  <input
-                    type="number"
-                    value={volumeTotale}
-                    onChange={(e) => setVolumeTotale(e.target.value)}
-                    placeholder="es. 100"
-                    min="0"
-                    step="0.1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                  />
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolatore Depolpatura Succo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .lucide-icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+        .lucide-icon-large {
+            width: 32px;
+            height: 32px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 p-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-orange-500 to-amber-500 p-6 text-white">
+                <div class="flex items-center gap-3">
+                    <svg class="lucide-icon lucide-icon-large" viewBox="0 0 24 24">
+                        <path d="M5 11h14l-5-5" />
+                        <path d="M5 13h14l-5 5" />
+                        <circle cx="12" cy="12" r="2" />
+                    </svg>
+                    <div>
+                        <h1 class="text-2xl font-bold">Calcolatore Depolpatura Succo</h1>
+                        <p class="text-orange-100 mt-1">Calcola le proporzioni per ottenere qualsiasi concentrazione target</p>
+                    </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Concentrazione Iniziale di Polpa (%)
-                  </label>
-                  <input
-                    type="number"
-                    value={concentrazioneIniziale}
-                    onChange={(e) => setConcentrazioneIniziale(e.target.value)}
-                    placeholder="es. 10"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Concentrazione Succo Depolpato (%)
-                  </label>
-                  <input
-                    type="number"
-                    value={concentrazioneDepolpata}
-                    onChange={(e) => setConcentrazioneDepolpata(e.target.value)}
-                    placeholder="es. 0"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Concentrazione Target Finale (%)
-                  </label>
-                  <input
-                    type="number"
-                    value={concentrazioneTarget}
-                    onChange={(e) => setConcentrazioneTarget(e.target.value)}
-                    placeholder="es. 2"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                  />
-                </div>
-              </div>
             </div>
 
-            {/* Errori */}
-            {errore && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-                <AlertCircle className="text-red-500 flex-shrink-0 mt-0.5" size={20} />
-                <div>
-                  <h4 className="text-red-800 font-medium">Errore</h4>
-                  <p className="text-red-700 text-sm mt-1">{errore}</p>
+            <div class="p-6">
+                <!-- Form Input -->
+                <div class="max-w-2xl mx-auto mb-8">
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                            <svg class="lucide-icon" viewBox="0 0 24 24">
+                                <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
+                                <line x1="9" x2="15" y1="6" y2="6"/>
+                                <line x1="9" x2="15" y1="10" y2="10"/>
+                                <line x1="9" x2="15" y1="14" y2="14"/>
+                                <line x1="9" x2="15" y1="18" y2="18"/>
+                            </svg>
+                            Dati Iniziali
+                        </h2>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Volume Totale di Succo (litri)
+                            </label>
+                            <input
+                                type="number"
+                                id="volumeTotale"
+                                placeholder="es. 100"
+                                min="0"
+                                step="0.1"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                            />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Concentrazione Iniziale di Polpa (%)
+                            </label>
+                            <input
+                                type="number"
+                                id="concentrazioneIniziale"
+                                placeholder="es. 10"
+                                min="0"
+                                max="100"
+                                step="0.1"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                            />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Concentrazione Succo Depolpato (%)
+                            </label>
+                            <input
+                                type="number"
+                                id="concentrazioneDepolpata"
+                                value="0"
+                                min="0"
+                                max="100"
+                                step="0.1"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                            />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Concentrazione Target Finale (%)
+                            </label>
+                            <input
+                                type="number"
+                                id="concentrazioneTarget"
+                                value="2"
+                                min="0"
+                                max="100"
+                                step="0.1"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                            />
+                        </div>
+                    </div>
                 </div>
-              </div>
-            )}
 
-            {/* Risultati */}
-            {risultati && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <CheckCircle className="text-green-600" size={24} />
-                  <h3 className="text-xl font-semibold text-green-800">Risultati</h3>
+                <!-- Errori -->
+                <div id="erroreContainer" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3 hidden">
+                    <svg class="lucide-icon text-red-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" x2="9" y1="9" y2="15"/>
+                        <line x1="9" x2="15" y1="9" y2="15"/>
+                    </svg>
+                    <div>
+                        <h4 class="text-red-800 font-medium">Errore</h4>
+                        <p id="erroreText" class="text-red-700 text-sm mt-1"></p>
+                    </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Aliquote */}
-                  <div className="space-y-4">
-                    <div className="bg-white rounded-lg p-4 border-l-4 border-blue-500">
-                      <h4 className="font-semibold text-blue-800 mb-2">Aliquota da NON depolpare</h4>
-                      <div className="text-2xl font-bold text-blue-900">{risultati.volumeNonDepolpare} litri</div>
-                      <div className="text-sm text-blue-700">({risultati.percentualeNonDepolpare}% del totale)</div>
-                      <div className="text-xs text-blue-600 mt-1">Mantiene polpa al {risultati.concentrazioneIniziale}%</div>
+                <!-- Risultati -->
+                <div id="risultatiContainer" class="bg-green-50 border border-green-200 rounded-lg p-6 hidden">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="lucide-icon text-green-600" viewBox="0 0 24 24">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22,4 12,14.01 9,11.01"/>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-green-800">Risultati</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-4 border-l-4 border-purple-500">
-                      <h4 className="font-semibold text-purple-800 mb-2">Aliquota da depolpare</h4>
-                      <div className="text-2xl font-bold text-purple-900">{risultati.volumeDepolpare} litri</div>
-                      <div className="text-sm text-purple-700">({risultati.percentualeDepolpare}% del totale)</div>
-                      <div className="text-xs text-purple-600 mt-1">Riduce polpa al {risultati.concentrazioneDepolpata}%</div>
-                    </div>
-                  </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Aliquote -->
+                        <div class="space-y-4">
+                            <div class="bg-white rounded-lg p-4 border-l-4 border-blue-500">
+                                <h4 class="font-semibold text-blue-800 mb-2">Aliquota da NON depolpare</h4>
+                                <div id="volumeNonDepolpare" class="text-2xl font-bold text-blue-900"></div>
+                                <div id="percentualeNonDepolpare" class="text-sm text-blue-700"></div>
+                                <div id="infoNonDepolpare" class="text-xs text-blue-600 mt-1"></div>
+                            </div>
 
-                  {/* Visualizzazione grafica */}
-                  <div className="space-y-4">
-                    <h4 className="font-semibold text-gray-800">Proporzioni Visive</h4>
-                    
-                    {/* Barra di composizione */}
-                    <div className="bg-gray-200 rounded-lg overflow-hidden h-8 flex">
-                      <div 
-                        className="bg-blue-500 flex items-center justify-center text-white text-xs font-medium"
-                        style={{ width: `${risultati.percentualeNonDepolpare}%` }}
-                      >
-                        {risultati.percentualeNonDepolpare}%
-                      </div>
-                      <div 
-                        className="bg-purple-500 flex items-center justify-center text-white text-xs font-medium"
-                        style={{ width: `${risultati.percentualeDepolpare}%` }}
-                      >
-                        {risultati.percentualeDepolpare}%
-                      </div>
-                    </div>
+                            <div class="bg-white rounded-lg p-4 border-l-4 border-purple-500">
+                                <h4 class="font-semibold text-purple-800 mb-2">Aliquota da depolpare</h4>
+                                <div id="volumeDepolpare" class="text-2xl font-bold text-purple-900"></div>
+                                <div id="percentualeDepolpare" class="text-sm text-purple-700"></div>
+                                <div id="infoDepolpare" class="text-xs text-purple-600 mt-1"></div>
+                            </div>
+                        </div>
 
-                    <div className="text-sm text-gray-600 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                        <span>Non depolpare</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-purple-500 rounded"></div>
-                        <span>Depolpare</span>
-                      </div>
-                    </div>
+                        <!-- Visualizzazione grafica -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-gray-800">Proporzioni Visive</h4>
+                            
+                            <!-- Barra di composizione -->
+                            <div class="bg-gray-200 rounded-lg overflow-hidden h-8 flex" id="barraProporzioni">
+                                <div id="barraNonDepolpare" class="bg-blue-500 flex items-center justify-center text-white text-xs font-medium"></div>
+                                <div id="barraDepolpare" class="bg-purple-500 flex items-center justify-center text-white text-xs font-medium"></div>
+                            </div>
 
-                    {/* Risultato finale */}
-                    <div className="bg-green-100 rounded-lg p-3 mt-4">
-                      <div className="text-center">
-                        <div className="text-lg font-bold text-green-800">Risultato Finale</div>
-                        <div className="text-2xl font-bold text-green-900">{risultati.volumeTotale} litri</div>
-                        <div className="text-sm text-green-700">Succo con polpa al {risultati.concentrazioneTarget}%</div>
-                      </div>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-blue-500 rounded"></div>
+                                    <span>Non depolpare</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 bg-purple-500 rounded"></div>
+                                    <span>Depolpare</span>
+                                </div>
+                            </div>
+
+                            <!-- Risultato finale -->
+                            <div class="bg-green-100 rounded-lg p-3 mt-4">
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-green-800">Risultato Finale</div>
+                                    <div id="volumeFinale" class="text-2xl font-bold text-green-900"></div>
+                                    <div id="concentrazioneFinale" class="text-sm text-green-700"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-            )}
 
-            {/* Istruzioni */}
-            <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 className="font-semibold text-blue-800 mb-3">Come utilizzare i risultati:</h3>
-              <ol className="list-decimal list-inside text-blue-700 space-y-2 text-sm">
-                <li>Prendi l'aliquota indicata e NON depolparla (mantiene la concentrazione originale)</li>
-                <li>Prendi l'aliquota rimanente e depolpala completamente (concentrazione 0%)</li>
-                <li>Miscela le due aliquote per ottenere il succo finale al 2% di polpa</li>
-              </ol>
+                <!-- Istruzioni -->
+                <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <h3 class="font-semibold text-blue-800 mb-3">Come utilizzare i risultati:</h3>
+                    <ol class="list-decimal list-inside text-blue-700 space-y-2 text-sm">
+                        <li>Prendi l'aliquota indicata e NON depolparla (mantiene la concentrazione originale)</li>
+                        <li>Prendi l'aliquota rimanente e depolpala alla concentrazione indicata</li>
+                        <li>Miscela le due aliquote per ottenere il succo finale alla concentrazione target</li>
+                    </ol>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  );
-};
 
-export default SuccoDepolpaturaCalculator;
+    <script>
+        function calcolaProporzioni() {
+            const volume = parseFloat(document.getElementById('volumeTotale').value);
+            const concIniziale = parseFloat(document.getElementById('concentrazioneIniziale').value);
+            const concDepolpata = parseFloat(document.getElementById('concentrazioneDepolpata').value);
+            const concTarget = parseFloat(document.getElementById('concentrazioneTarget').value);
+
+            const erroreContainer = document.getElementById('erroreContainer');
+            const erroreText = document.getElementById('erroreText');
+            const risultatiContainer = document.getElementById('risultatiContainer');
+
+            // Nascondi risultati precedenti
+            risultatiContainer.classList.add('hidden');
+            erroreContainer.classList.add('hidden');
+
+            // Validazione input
+            if (!volume || volume <= 0) {
+                mostraErrore('Inserire un volume valido maggiore di 0');
+                return;
+            }
+
+            if (isNaN(concIniziale) || concIniziale <= 0) {
+                mostraErrore('Inserire una concentrazione iniziale valida maggiore di 0%');
+                return;
+            }
+
+            if (isNaN(concDepolpata) || concDepolpata < 0) {
+                mostraErrore('Inserire una concentrazione depolpata valida maggiore o uguale a 0%');
+                return;
+            }
+
+            if (isNaN(concTarget) || concTarget <= 0) {
+                mostraErrore('Inserire una concentrazione target valida maggiore di 0%');
+                return;
+            }
+
+            if (concIniziale > 100 || concDepolpata > 100 || concTarget > 100) {
+                mostraErrore('Le concentrazioni non possono essere maggiori del 100%');
+                return;
+            }
+
+            if (concDepolpata >= concIniziale) {
+                mostraErrore('La concentrazione depolpata deve essere minore di quella iniziale');
+                return;
+            }
+
+            if (concTarget <= concDepolpata || concTarget >= concIniziale) {
+                mostraErrore('La concentrazione target deve essere compresa tra quella depolpata e quella iniziale');
+                return;
+            }
+
+            // Calcoli
+            const fractioneNonDepolpare = (concTarget - concDepolpata) / (concIniziale - concDepolpata);
+            const fractioneDepolpare = 1 - fractioneNonDepolpare;
+            
+            const volumeNonDepolpare = fractioneNonDepolpare * volume;
+            const volumeDepolpare = fractioneDepolpare * volume;
+            const percentualeNonDepolpare = fractioneNonDepolpare * 100;
+            const percentualeDepolpare = fractioneDepolpare * 100;
+
+            // Mostra risultati
+            mostraRisultati({
+                volumeNonDepolpare: volumeNonDepolpare.toFixed(2),
+                volumeDepolpare: volumeDepolpare.toFixed(2),
+                percentualeNonDepolpare: percentualeNonDepolpare.toFixed(1),
+                percentualeDepolpare: percentualeDepolpare.toFixed(1),
+                concentrazioneIniziale: concIniziale,
+                concentrazioneDepolpata: concDepolpata,
+                concentrazioneTarget: concTarget,
+                volumeTotale: volume
+            });
+        }
+
+        function mostraErrore(messaggio) {
+            document.getElementById('erroreText').textContent = messaggio;
+            document.getElementById('erroreContainer').classList.remove('hidden');
+        }
+
+        function mostraRisultati(risultati) {
+            document.getElementById('volumeNonDepolpare').textContent = risultati.volumeNonDepolpare + ' litri';
+            document.getElementById('percentualeNonDepolpare').textContent = `(${risultati.percentualeNonDepolpare}% del totale)`;
+            document.getElementById('infoNonDepolpare').textContent = `Mantiene polpa al ${risultati.concentrazioneIniziale}%`;
+            
+            document.getElementById('volumeDepolpare').textContent = risultati.volumeDepolpare + ' litri';
+            document.getElementById('percentualeDepolpare').textContent = `(${risultati.percentualeDepolpare}% del totale)`;
+            document.getElementById('infoDepolpare').textContent = `Riduce polpa al ${risultati.concentrazioneDepolpata}%`;
+            
+            document.getElementById('volumeFinale').textContent = risultati.volumeTotale + ' litri';
+            document.getElementById('concentrazioneFinale').textContent = `Succo con polpa al ${risultati.concentrazioneTarget}%`;
+            
+            // Aggiorna barra grafica
+            const barraNonDepolpare = document.getElementById('barraNonDepolpare');
+            const barraDepolpare = document.getElementById('barraDepolpare');
+            
+            barraNonDepolpare.style.width = risultati.percentualeNonDepolpare + '%';
+            barraNonDepolpare.textContent = risultati.percentualeNonDepolpare + '%';
+            
+            barraDepolpare.style.width = risultati.percentualeDepolpare + '%';
+            barraDepolpare.textContent = risultati.percentualeDepolpare + '%';
+            
+            document.getElementById('risultatiContainer').classList.remove('hidden');
+        }
+
+        // Event listeners per calcolo automatico
+        document.getElementById('volumeTotale').addEventListener('input', calcolaProporzioni);
+        document.getElementById('concentrazioneIniziale').addEventListener('input', calcolaProporzioni);
+        document.getElementById('concentrazioneDepolpata').addEventListener('input', calcolaProporzioni);
+        document.getElementById('concentrazioneTarget').addEventListener('input', calcolaProporzioni);
+    </script>
+</body>
+</html>
