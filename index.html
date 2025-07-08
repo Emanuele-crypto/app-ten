@@ -191,6 +191,10 @@
     </div>
 
     <script>
+        function arrotondaAlCentinaio(numero) {
+            return Math.ceil(numero / 100) * 100;
+        }
+
         function calcolaProporzioni() {
             const volume = parseFloat(document.getElementById('volumeTotale').value);
             const concIniziale = parseFloat(document.getElementById('concentrazioneIniziale').value);
@@ -254,13 +258,18 @@
             const polpaEliminata = (volumeDepolpare * (concIniziale - concDepolpata)) / 100;
             const volumeFinale = volume - polpaEliminata;
 
+            // Arrotonda tutte le quantità al centinaio in eccesso
+            const volumeNonDepolpareArrotondato = arrotondaAlCentinaio(volumeNonDepolpare);
+            const volumeDepolpareArrotondato = arrotondaAlCentinaio(volumeDepolpare);
+            const volumeFinaleArrotondato = arrotondaAlCentinaio(volumeFinale);
+
             // Mostra risultati
             mostraRisultati({
-                volumeNonDepolpare: volumeNonDepolpare.toFixed(2),
-                volumeDepolpare: volumeDepolpare.toFixed(2),
+                volumeNonDepolpare: volumeNonDepolpareArrotondato,
+                volumeDepolpare: volumeDepolpareArrotondato,
                 percentualeNonDepolpare: percentualeNonDepolpare.toFixed(1),
                 percentualeDepolpare: percentualeDepolpare.toFixed(1),
-                volumeFinale: volumeFinale.toFixed(2),
+                volumeFinale: volumeFinaleArrotondato,
                 concentrazioneIniziale: concIniziale,
                 concentrazioneDepolpata: concDepolpata,
                 concentrazioneTarget: concTarget,
