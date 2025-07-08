@@ -152,12 +152,6 @@
                                 <div id="percentualeDepolpare" class="text-sm text-purple-700"></div>
                                 <div id="infoDepolpare" class="text-xs text-purple-600 mt-1"></div>
                             </div>
-
-                            <div class="bg-white rounded-lg p-4 border-l-4 border-red-500">
-                                <h4 class="font-semibold text-red-800 mb-2">Polpa Eliminata</h4>
-                                <div id="polpaEliminata" class="text-2xl font-bold text-red-900"></div>
-                                <div class="text-xs text-red-600 mt-1">Volume di polpa rimossa</div>
-                            </div>
                         </div>
 
                         <!-- Visualizzazione grafica -->
@@ -266,7 +260,6 @@
                 volumeDepolpare: volumeDepolpare.toFixed(2),
                 percentualeNonDepolpare: percentualeNonDepolpare.toFixed(1),
                 percentualeDepolpare: percentualeDepolpare.toFixed(1),
-                polpaEliminata: polpaEliminata.toFixed(2),
                 volumeFinale: volumeFinale.toFixed(2),
                 concentrazioneIniziale: concIniziale,
                 concentrazioneDepolpata: concDepolpata,
@@ -288,8 +281,6 @@
             document.getElementById('volumeDepolpare').textContent = risultati.volumeDepolpare + ' litri';
             document.getElementById('percentualeDepolpare').textContent = `(${risultati.percentualeDepolpare}% del totale)`;
             document.getElementById('infoDepolpare').textContent = `Riduce polpa al ${risultati.concentrazioneDepolpata}%`;
-            
-            document.getElementById('polpaEliminata').textContent = risultati.polpaEliminata + ' litri';
             
             document.getElementById('volumeFinale').textContent = risultati.volumeFinale + ' litri';
             document.getElementById('concentrazioneFinale').textContent = `Succo con polpa al ${risultati.concentrazioneTarget}%`;
